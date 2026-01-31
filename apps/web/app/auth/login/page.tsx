@@ -19,7 +19,7 @@ export default function LoginPage() {
               Don&apos;t have an account?{" "}
               <Link
                 href="/auth/signup"
-                className="underline underline-offset-4 hover:text-primary"
+                className="underline underline-offset-4 hover:text-primary transition-colors"
               >
                 Sign up
               </Link>
@@ -28,11 +28,13 @@ export default function LoginPage() {
         </div>
       </div>
       <div className="bg-muted relative hidden lg:block">
-        <img
-          src="/logo.png"
-          alt="Help My IELTS"
-          className="absolute inset-0 h-full w-full object-contain dark:brightness-[0.2] dark:grayscale"
-        />
+        <div className="absolute inset-0 flex items-center justify-center p-8">
+          <img
+            src="/logo.png"
+            alt="Help My IELTS"
+            className="max-w-full max-h-full object-contain opacity-90 transition-opacity hover:opacity-100"
+          />
+        </div>
       </div>
     </div>
   );
