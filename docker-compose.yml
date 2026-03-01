@@ -1,0 +1,44 @@
+name: hmi-platform
+services:
+  db:
+    # We use the pgvector official image based on PostgreSQL 16
+    image: pgvector/pgvector:pg16
+    container_name: hmi_postgres_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-username}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-helpmyielts}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - hmi_postgres_data:/var/lib/postgresql/data
+      # Execute init scripts on startup
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-username} -d ${POSTGRES_DB:-helpmyielts}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: hmi_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@helpmyielts.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - hmi_pgadmin_data:/var/lib/pgadmin
+
+volumes:
+  hmi_postgres_data:
+    name: hmi_postgres_data
+  hmi_pgadmin_data:
+    name: hmi_pgadmin_data

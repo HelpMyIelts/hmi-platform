@@ -30,7 +30,7 @@ export default function LoginPage() {
       <div className="bg-muted relative hidden lg:block">
         <div className="absolute inset-0 flex items-center justify-center p-8">
           <img
-            src="/logo.png"
+            src="/hmi_logo.png"
             alt="Help My IELTS"
             className="max-w-full max-h-full object-contain opacity-90 transition-opacity hover:opacity-100"
           />
