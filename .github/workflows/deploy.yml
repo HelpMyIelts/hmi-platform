@@ -53,6 +53,7 @@ jobs:
               uses: docker/build-push-action@v5
               with:
                   context: ./apps/landing
+                  file: ./apps/landing/Dockerfile
                   push: true
                   tags: ${{ env.ECR_REGISTRY }}/helpmyielts-landing:latest
                   labels: ${{ steps.meta.outputs.labels }}
@@ -63,6 +64,7 @@ jobs:
               uses: docker/build-push-action@v5
               with:
                   context: ./apps/web
+                  file: ./apps/web/Dockerfile
                   push: true
                   tags: ${{ env.ECR_REGISTRY }}/helpmyielts-app:latest
                   labels: ${{ steps.meta.outputs.labels }}
@@ -73,6 +75,7 @@ jobs:
               uses: docker/build-push-action@v5
               with:
                   context: ./apps/api
+                  file: ./apps/api/Dockerfile
                   push: true
                   tags: ${{ env.ECR_REGISTRY }}/helpmyielts-api:latest
                   labels: ${{ steps.meta.outputs.labels }}
