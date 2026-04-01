@@ -45,14 +45,12 @@ jobs:
                       ${{ env.ECR_REGISTRY }}/helpmyielts-api
                   tags: |
                       type=ref,event=branch
-                      type=ref,event=pr
-                      type=sha,prefix={{branch}}-
                       type=raw,value=latest,enable={{is_default_branch}}
 
             - name: Build and push landing image
               uses: docker/build-push-action@v5
               with:
-                  context: ./apps/landing
+                  context: .
                   file: ./apps/landing/Dockerfile
                   push: true
                   tags: ${{ env.ECR_REGISTRY }}/helpmyielts-landing:latest
@@ -63,7 +61,7 @@ jobs:
             - name: Build and push web image
               uses: docker/build-push-action@v5
               with:
-                  context: ./apps/web
+                  context: .
                   file: ./apps/web/Dockerfile
                   push: true
                   tags: ${{ env.ECR_REGISTRY }}/helpmyielts-app:latest
@@ -74,7 +72,7 @@ jobs:
             - name: Build and push API image
               uses: docker/build-push-action@v5
               with:
-                  context: ./apps/api
+                  context: .
                   file: ./apps/api/Dockerfile
                   push: true
                   tags: ${{ env.ECR_REGISTRY }}/helpmyielts-api:latest

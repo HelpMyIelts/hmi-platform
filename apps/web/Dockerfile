@@ -3,28 +3,28 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Copy package files first for better caching
-COPY package*.json ./
+COPY apps/web/package*.json ./apps/web/
 COPY pnpm-lock.yaml ./
 COPY pnpm-workspace.yaml ./
 
 # Install pnpm and dependencies
 RUN npm install -g pnpm
-RUN pnpm install --frozen-lockfile
+RUN --mount=type=cache,target=/root/.pnpm-store pnpm install --frozen-lockfile
 
 # Copy source code
-COPY . .
+COPY apps/web ./apps/web
 
 # Build the application
-RUN pnpm run build
+RUN --mount=type=cache,target=/root/.pnpm-store pnpm --filter web run build
 
 FROM node:20-alpine AS runner
 
 WORKDIR /app
 
 # Copy built application
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/apps/web/dist ./dist
+COPY --from=builder /app/apps/web/node_modules ./node_modules
+COPY --from=builder /app/apps/web/package.json ./package.json
 
 # Install pnpm for runtime
 RUN npm install -g pnpm
