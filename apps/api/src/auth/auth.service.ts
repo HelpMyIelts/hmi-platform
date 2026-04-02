@@ -4,7 +4,7 @@ import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcryptjs';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { User } from '@prisma/client';
+import { User } from '../../generated/prisma/index';
 
 @Injectable()
 export class AuthService {
