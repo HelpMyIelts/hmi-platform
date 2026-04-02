@@ -4,6 +4,7 @@ WORKDIR /app
 
 # Copy package files first for better caching
 COPY apps/api/package*.json ./apps/api/
+COPY packages/*/package.json ./packages/*/
 COPY ./pnpm-lock.yaml ./pnpm-lock.yaml
 COPY ./pnpm-workspace.yaml ./pnpm-workspace.yaml
 
@@ -13,6 +14,7 @@ RUN --mount=type=cache,target=/root/.pnpm-store pnpm install --frozen-lockfile
 
 # Copy source code
 COPY apps/api ./apps/api
+COPY packages ./packages
 
 # Build the application
 RUN --mount=type=cache,target=/root/.pnpm-store pnpm --filter api run build
