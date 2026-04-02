@@ -100,6 +100,9 @@ jobs:
           script: |
             cd /home/ubuntu
 
+            # Remove old docker-compose files and create new one
+            rm -f docker-compose.yml docker-compose.prod.yml
+
             # Create database init script
             cat > init.sql << 'EOF'
             -- Enable pgvector extension
@@ -109,8 +112,8 @@ jobs:
             -- This file can be expanded with more initialization scripts
             EOF
 
-            # Create docker-compose.prod.yml if it doesn't exist
-            cat > docker-compose.prod.yml << 'EOF'
+            # Create docker-compose.yml
+            cat > docker-compose.yml << 'EOF'
             version: "3.9"
 
             services:
@@ -216,14 +219,14 @@ jobs:
             docker pull 908861959909.dkr.ecr.us-east-1.amazonaws.com/helpmyielts-api:latest
 
             # Stop and remove existing containers
-            docker-compose -f docker-compose.prod.yml down || true
+            docker-compose down || true
 
             # Start new containers
-            docker-compose -f docker-compose.prod.yml up -d
+            docker-compose up -d
 
             # Wait for containers to be healthy
             echo "Waiting for containers to be healthy..."
-            timeout 300 bash -c 'until docker-compose -f docker-compose.prod.yml ps | grep -q "healthy\|Up (healthy)"; do sleep 10; done'
+            timeout 300 bash -c 'until docker-compose ps | grep -q "healthy\|Up (healthy)"; do sleep 10; done'
 
             # Show running containers
             docker ps
