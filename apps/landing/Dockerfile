@@ -4,7 +4,11 @@ WORKDIR /app
 
 # Copy package files first for better caching
 COPY apps/landing/package*.json ./apps/landing/
-COPY packages/*/package.json ./packages/*/
+COPY packages/eslint-config/package.json ./packages/eslint-config/
+COPY packages/schemas/package.json ./packages/schemas/
+COPY packages/types/package.json ./packages/types/
+COPY packages/typescript-config/package.json ./packages/typescript-config/
+COPY packages/ui/package.json ./packages/ui/
 COPY ./pnpm-lock.yaml ./pnpm-lock.yaml
 COPY ./pnpm-workspace.yaml ./pnpm-workspace.yaml
 
