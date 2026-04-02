@@ -20,6 +20,9 @@ RUN --mount=type=cache,target=/root/.pnpm-store pnpm install --frozen-lockfile
 COPY apps/api ./apps/api
 COPY packages ./packages
 
+# Copy Prisma schema for client generation
+COPY apps/api/prisma ./apps/api/prisma
+
 # Build the application
 RUN --mount=type=cache,target=/root/.pnpm-store pnpm --filter api run build
 
@@ -30,8 +33,8 @@ WORKDIR /app
 # Copy built application
 COPY --from=builder /app/apps/api/dist ./dist
 COPY --from=builder /app/apps/api/node_modules ./node_modules
-COPY --from=builder /app/apps/api/package.json ./package.json
 COPY --from=builder /app/apps/api/generated ./generated
+COPY --from=builder /app/apps/api/package.json ./package.json
 
 # Install pnpm for runtime
 RUN npm install -g pnpm
