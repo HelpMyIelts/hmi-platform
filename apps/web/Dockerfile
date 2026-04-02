@@ -33,9 +33,6 @@ COPY --from=builder /app/apps/web/.next/static ./.next/static
 COPY --from=builder /app/apps/web/public ./public
 COPY --from=builder /app/apps/web/package.json ./package.json
 
-# Install pnpm for runtime
-RUN npm install -g pnpm
-
 EXPOSE 3000
 
-CMD ["pnpm", "start"]
+CMD ["node", "server.js"]

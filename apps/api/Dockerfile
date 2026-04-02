@@ -26,17 +26,17 @@ COPY apps/api/prisma ./apps/api/prisma
 # Build the application
 RUN --mount=type=cache,target=/root/.pnpm-store pnpm --filter api run build
 
+# Install production dependencies only
+RUN --mount=type=cache,target=/root/.pnpm-store pnpm --filter api install --prod --frozen-lockfile
+
 FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# Copy built application
+# Copy built application and production dependencies
 COPY --from=builder /app/apps/api/dist ./dist
 COPY --from=builder /app/apps/api/node_modules ./node_modules
 COPY --from=builder /app/apps/api/package.json ./package.json
-
-# Install pnpm for runtime
-RUN npm install -g pnpm
 
 EXPOSE 3000
 

@@ -101,7 +101,13 @@ jobs:
             cd /home/ubuntu
 
             # Remove old docker-compose files and create new one
+            echo "Removing old docker-compose files..."
             rm -f docker-compose.yml docker-compose.prod.yml
+            ls -la docker-compose* || echo "No docker-compose files found"
+
+            # Stop all running containers first
+            docker stop $(docker ps -q) || echo "No containers to stop"
+            docker system prune -f
 
             # Create database init script
             cat > init.sql << 'EOF'
@@ -212,6 +218,9 @@ jobs:
             volumes:
               postgres_data:
             EOF
+
+            echo "New docker-compose.yml created:"
+            cat docker-compose.yml | head -20
 
             # Pull latest images
             docker pull 908861959909.dkr.ecr.us-east-1.amazonaws.com/helpmyielts-landing:latest

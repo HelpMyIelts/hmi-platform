@@ -1,4 +1,3 @@
-name: hmi-platform-prod
 services:
   landing:
     image: 908861959909.dkr.ecr.us-east-1.amazonaws.com/helpmyielts-landing:latest
