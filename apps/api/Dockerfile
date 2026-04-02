@@ -33,7 +33,6 @@ WORKDIR /app
 # Copy built application
 COPY --from=builder /app/apps/api/dist ./dist
 COPY --from=builder /app/apps/api/node_modules ./node_modules
-COPY --from=builder /app/apps/api/generated ./generated
 COPY --from=builder /app/apps/api/package.json ./package.json
 
 # Install pnpm for runtime
