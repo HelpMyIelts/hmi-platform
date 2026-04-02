@@ -1,0 +1,76 @@
+name: hmi-platform-prod
+services:
+  landing:
+    image: 908861959909.dkr.ecr.us-east-1.amazonaws.com/helpmyielts-landing:latest
+    container_name: landing
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    platform: linux/amd64
+
+  app:
+    image: 908861959909.dkr.ecr.us-east-1.amazonaws.com/helpmyielts-app:latest
+    container_name: app
+    restart: unless-stopped
+    ports:
+      - "3003:3000"
+    platform: linux/amd64
+    depends_on:
+      - api
+
+  api:
+    image: 908861959909.dkr.ecr.us-east-1.amazonaws.com/helpmyielts-api:latest
+    container_name: api
+    restart: unless-stopped
+    ports:
+      - "3004:3000"
+    platform: linux/amd64
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-username}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-helpmyielts}
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-username}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-helpmyielts}
+    ports:
+      - "5556:5432"
+    volumes:
+      - hmi_postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-username} -d ${POSTGRES_DB:-helpmyielts}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  hmi_postgres_data:
+    name: hmi_postgres_data
+    external: true

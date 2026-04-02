@@ -100,22 +100,37 @@ jobs:
           script: |
             cd /home/ubuntu
 
+            # Create database init script
+            cat > init.sql << 'EOF'
+            -- Enable pgvector extension
+            CREATE EXTENSION IF NOT EXISTS vector;
+
+            -- Create additional indexes if needed
+            -- This file can be expanded with more initialization scripts
+            EOF
+
             # Create docker-compose.prod.yml if it doesn't exist
             cat > docker-compose.prod.yml << 'EOF'
             version: "3.9"
 
             services:
               landing:
-                image: ${{ env.ECR_REGISTRY }}/helpmyielts-landing:latest
+                image: 908861959909.dkr.ecr.us-east-1.amazonaws.com/helpmyielts-landing:latest
                 container_name: landing
                 restart: always
                 ports:
                   - "3001:3000"
                 environment:
                   - NODE_ENV=production
-              
+                healthcheck:
+                  test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
+                  interval: 30s
+                  timeout: 10s
+                  retries: 3
+                  start_period: 40s
+
               app:
-                image: ${{ env.ECR_REGISTRY }}/helpmyielts-app:latest
+                image: 908861959909.dkr.ecr.us-east-1.amazonaws.com/helpmyielts-app:latest
                 container_name: app
                 restart: always
                 ports:
@@ -123,9 +138,18 @@ jobs:
                 environment:
                   - NODE_ENV=production
                   - NEXT_PUBLIC_API_URL=http://100.54.96.142:3003
-              
+                healthcheck:
+                  test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
+                  interval: 30s
+                  timeout: 10s
+                  retries: 3
+                  start_period: 40s
+                depends_on:
+                  api:
+                    condition: service_healthy
+
               api:
-                image: ${{ env.ECR_REGISTRY }}/helpmyielts-api:latest
+                image: 908861959909.dkr.ecr.us-east-1.amazonaws.com/helpmyielts-api:latest
                 container_name: api
                 restart: always
                 ports:
@@ -138,12 +162,20 @@ jobs:
                   - AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
                   - AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
                   - AWS_REGION=${{ env.AWS_REGION }}
+                healthcheck:
+                  test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
+                  interval: 30s
+                  timeout: 10s
+                  retries: 3
+                  start_period: 40s
                 depends_on:
-                  - postgres
-                  - redis
-              
+                  postgres:
+                    condition: service_healthy
+                  redis:
+                    condition: service_healthy
+
               postgres:
-                image: postgres:15
+                image: pgvector/pgvector:pg16
                 container_name: postgres
                 restart: always
                 environment:
@@ -152,24 +184,36 @@ jobs:
                   POSTGRES_PASSWORD: password
                 volumes:
                   - postgres_data:/var/lib/postgresql/data
+                  - ./init.sql:/docker-entrypoint-initdb.d/init.sql
                 ports:
                   - "5432:5432"
-              
+                healthcheck:
+                  test: ["CMD-SHELL", "pg_isready -U postgres -d helpmyielts"]
+                  interval: 10s
+                  timeout: 5s
+                  retries: 5
+                  start_period: 10s
+
               redis:
-                image: redis:7
+                image: redis:7-alpine
                 container_name: redis
                 restart: always
                 ports:
                   - "6379:6379"
+                healthcheck:
+                  test: ["CMD", "redis-cli", "ping"]
+                  interval: 10s
+                  timeout: 5s
+                  retries: 5
 
             volumes:
               postgres_data:
             EOF
 
             # Pull latest images
-            docker pull ${{ env.ECR_REGISTRY }}/helpmyielts-landing:latest
-            docker pull ${{ env.ECR_REGISTRY }}/helpmyielts-app:latest
-            docker pull ${{ env.ECR_REGISTRY }}/helpmyielts-api:latest
+            docker pull 908861959909.dkr.ecr.us-east-1.amazonaws.com/helpmyielts-landing:latest
+            docker pull 908861959909.dkr.ecr.us-east-1.amazonaws.com/helpmyielts-app:latest
+            docker pull 908861959909.dkr.ecr.us-east-1.amazonaws.com/helpmyielts-api:latest
 
             # Stop and remove existing containers
             docker-compose -f docker-compose.prod.yml down || true
@@ -178,7 +222,8 @@ jobs:
             docker-compose -f docker-compose.prod.yml up -d
 
             # Wait for containers to be healthy
-            sleep 30
+            echo "Waiting for containers to be healthy..."
+            timeout 300 bash -c 'until docker-compose -f docker-compose.prod.yml ps | grep -q "healthy\|Up (healthy)"; do sleep 10; done'
 
             # Show running containers
             docker ps
@@ -204,7 +249,10 @@ jobs:
 
       - name: Health check
         run: |
-          sleep 60
+          sleep 30
+          echo "Checking landing page..."
           curl -f http://100.54.96.142:3001 || exit 1
+          echo "Checking app..."
           curl -f http://100.54.96.142:3002 || exit 1
+          echo "Checking API health..."
           curl -f http://100.54.96.142:3003/health || exit 1
