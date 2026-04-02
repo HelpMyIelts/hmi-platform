@@ -1,194 +1,210 @@
 name: CI/CD Pipeline for IELTS Platform
 
 on:
-    push:
-        branches:
-            - main
-    workflow_dispatch:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 env:
-    AWS_REGION: us-east-1
-    ECR_REGISTRY: 908861959909.dkr.ecr.us-east-1.amazonaws.com
+  AWS_REGION: us-east-1
+  ECR_REGISTRY: 908861959909.dkr.ecr.us-east-1.amazonaws.com
 
 jobs:
-    build-and-deploy:
-        runs-on: ubuntu-latest
-        permissions:
-            contents: read
-            packages: write
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-            - name: Configure AWS credentials
-              uses: aws-actions/configure-aws-credentials@v4
-              with:
-                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  aws-region: ${{ env.AWS_REGION }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
-            - name: Log in to Amazon ECR
-              id: login-ecr
-              uses: aws-actions/amazon-ecr-login@v2
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
-            - name: Verify files exist
-              run: |
-                  echo "Checking if pnpm-lock.yaml exists:"
-                  ls -la pnpm-lock.yaml
-                  echo "Checking if pnpm-workspace.yaml exists:"
-                  ls -la pnpm-workspace.yaml
-                  echo "Files in apps/landing:"
-                  ls -la apps/landing/
+      - name: Verify files exist
+        run: |
+          echo "Checking if pnpm-lock.yaml exists:"
+          ls -la pnpm-lock.yaml
+          echo "Checking if pnpm-workspace.yaml exists:"
+          ls -la pnpm-workspace.yaml
+          echo "Files in apps/landing:"
+          ls -la apps/landing/
 
-            - name: Set up Docker Buildx
-              uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-            - name: Extract metadata
-              id: meta
-              uses: docker/metadata-action@v5
-              with:
-                  images: |
-                      ${{ env.ECR_REGISTRY }}/helpmyielts-landing
-                      ${{ env.ECR_REGISTRY }}/helpmyielts-app
-                      ${{ env.ECR_REGISTRY }}/helpmyielts-api
-                  tags: |
-                      type=ref,event=branch
-                      type=raw,value=latest,enable={{is_default_branch}}
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ env.ECR_REGISTRY }}/helpmyielts-landing
+            ${{ env.ECR_REGISTRY }}/helpmyielts-app
+            ${{ env.ECR_REGISTRY }}/helpmyielts-api
+          tags: |
+            type=ref,event=branch
+            type=raw,value=latest,enable={{is_default_branch}}
 
-            - name: Build and push landing image
-              uses: docker/build-push-action@v5
-              with:
-                  context: .
-                  file: ./apps/landing/Dockerfile
-                  push: true
-                  tags: ${{ env.ECR_REGISTRY }}/helpmyielts-landing:latest
-                  labels: ${{ steps.meta.outputs.labels }}
-                  cache-from: type=gha
-                  cache-to: type=gha,mode=max
+      - name: Build and push landing image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/landing/Dockerfile
+          push: true
+          tags: ${{ env.ECR_REGISTRY }}/helpmyielts-landing:latest
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-            - name: Build and push web image
-              uses: docker/build-push-action@v5
-              with:
-                  context: .
-                  file: ./apps/web/Dockerfile
-                  push: true
-                  tags: ${{ env.ECR_REGISTRY }}/helpmyielts-app:latest
-                  labels: ${{ steps.meta.outputs.labels }}
-                  cache-from: type=gha
-                  cache-to: type=gha,mode=max
+      - name: Build and push web image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/web/Dockerfile
+          push: true
+          tags: ${{ env.ECR_REGISTRY }}/helpmyielts-app:latest
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-            - name: Build and push API image
-              uses: docker/build-push-action@v5
-              with:
-                  context: .
-                  file: ./apps/api/Dockerfile
-                  push: true
-                  tags: ${{ env.ECR_REGISTRY }}/helpmyielts-api:latest
-                  labels: ${{ steps.meta.outputs.labels }}
-                  cache-from: type=gha
-                  cache-to: type=gha,mode=max
+      - name: Build and push API image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/api/Dockerfile
+          push: true
+          tags: ${{ env.ECR_REGISTRY }}/helpmyielts-api:latest
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-            - name: Deploy to EC2
-              uses: appleboy/ssh-action@v1.0.3
-              with:
-                  host: ${{ secrets.EC2_HOST }}
-                  username: ${{ secrets.EC2_USER }}
-                  key: ${{ secrets.SSH_PRIVATE_KEY }}
-                  script: |
-                      cd /home/ubuntu
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/ubuntu
 
-                      # Create docker-compose.prod.yml if it doesn't exist
-                      cat > docker-compose.prod.yml << 'EOF'
-                      version: "3.9"
+            # Create docker-compose.prod.yml if it doesn't exist
+            cat > docker-compose.prod.yml << 'EOF'
+            version: "3.9"
 
-                      services:
-                        landing:
-                          image: ${{ env.ECR_REGISTRY }}/helpmyielts-landing:latest
-                          container_name: landing
-                          restart: always
-                          ports:
-                            - "3001:3000"
-                          environment:
-                            - NODE_ENV=production
-                        
-                        app:
-                          image: ${{ env.ECR_REGISTRY }}/helpmyielts-app:latest
-                          container_name: app
-                          restart: always
-                          ports:
-                            - "3002:3000"
-                          environment:
-                            - NODE_ENV=production
-                            - NEXT_PUBLIC_API_URL=http://100.54.96.142:3003
-                        
-                        api:
-                          image: ${{ env.ECR_REGISTRY }}/helpmyielts-api:latest
-                          container_name: api
-                          restart: always
-                          ports:
-                            - "3003:3000"
-                          environment:
-                            - NODE_ENV=production
-                            - DATABASE_URL=postgresql://postgres:password@postgres:5432/helpmyielts
-                            - REDIS_URL=redis://redis:6379
-                            - JWT_SECRET=${{ secrets.JWT_SECRET }}
-                            - AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-                            - AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                            - AWS_REGION=${{ env.AWS_REGION }}
-                          depends_on:
-                            - postgres
-                            - redis
-                        
-                        postgres:
-                          image: postgres:15
-                          container_name: postgres
-                          restart: always
-                          environment:
-                            POSTGRES_DB: helpmyielts
-                            POSTGRES_USER: postgres
-                            POSTGRES_PASSWORD: password
-                          volumes:
-                            - postgres_data:/var/lib/postgresql/data
-                          ports:
-                            - "5432:5432"
-                        
-                        redis:
-                          image: redis:7
-                          container_name: redis
-                          restart: always
-                          ports:
-                            - "6379:6379"
+            services:
+              landing:
+                image: ${{ env.ECR_REGISTRY }}/helpmyielts-landing:latest
+                container_name: landing
+                restart: always
+                ports:
+                  - "3001:3000"
+                environment:
+                  - NODE_ENV=production
+              
+              app:
+                image: ${{ env.ECR_REGISTRY }}/helpmyielts-app:latest
+                container_name: app
+                restart: always
+                ports:
+                  - "3002:3000"
+                environment:
+                  - NODE_ENV=production
+                  - NEXT_PUBLIC_API_URL=http://100.54.96.142:3003
+              
+              api:
+                image: ${{ env.ECR_REGISTRY }}/helpmyielts-api:latest
+                container_name: api
+                restart: always
+                ports:
+                  - "3003:3000"
+                environment:
+                  - NODE_ENV=production
+                  - DATABASE_URL=postgresql://postgres:password@postgres:5432/helpmyielts
+                  - REDIS_URL=redis://redis:6379
+                  - JWT_SECRET=${{ secrets.JWT_SECRET }}
+                  - AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+                  - AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  - AWS_REGION=${{ env.AWS_REGION }}
+                depends_on:
+                  - postgres
+                  - redis
+              
+              postgres:
+                image: postgres:15
+                container_name: postgres
+                restart: always
+                environment:
+                  POSTGRES_DB: helpmyielts
+                  POSTGRES_USER: postgres
+                  POSTGRES_PASSWORD: password
+                volumes:
+                  - postgres_data:/var/lib/postgresql/data
+                ports:
+                  - "5432:5432"
+              
+              redis:
+                image: redis:7
+                container_name: redis
+                restart: always
+                ports:
+                  - "6379:6379"
 
-                      volumes:
-                        postgres_data:
-                      EOF
+            volumes:
+              postgres_data:
+            EOF
 
-                      # Pull latest images
-                      docker pull ${{ env.ECR_REGISTRY }}/helpmyielts-landing:latest
-                      docker pull ${{ env.ECR_REGISTRY }}/helpmyielts-app:latest
-                      docker pull ${{ env.ECR_REGISTRY }}/helpmyielts-api:latest
+            # Pull latest images
+            docker pull ${{ env.ECR_REGISTRY }}/helpmyielts-landing:latest
+            docker pull ${{ env.ECR_REGISTRY }}/helpmyielts-app:latest
+            docker pull ${{ env.ECR_REGISTRY }}/helpmyielts-api:latest
 
-                      # Stop and remove existing containers
-                      docker-compose -f docker-compose.prod.yml down || true
+            # Stop and remove existing containers
+            docker-compose -f docker-compose.prod.yml down || true
 
-                      # Start new containers
-                      docker-compose -f docker-compose.prod.yml up -d
+            # Start new containers
+            docker-compose -f docker-compose.prod.yml up -d
 
-                      # Wait for containers to be healthy
-                      sleep 30
+            # Wait for containers to be healthy
+            sleep 30
 
-                      # Show running containers
-                      docker ps
+            # Show running containers
+            docker ps
 
-                      # Clean up unused images
-                      docker image prune -f
+            # Show container logs for debugging
+            echo "=== Landing container logs ==="
+            docker logs landing || echo "No landing container logs"
 
-            - name: Health check
-              run: |
-                  sleep 60
-                  curl -f http://100.54.96.142:3001 || exit 1
-                  curl -f http://100.54.96.142:3002 || exit 1
-                  curl -f http://100.54.96.142:3003/health || exit 1
+            echo "=== App container logs ==="
+            docker logs app || echo "No app container logs"
+
+            echo "=== API container logs ==="
+            docker logs api || echo "No API container logs"
+
+            echo "=== Postgres container logs ==="
+            docker logs postgres || echo "No postgres container logs"
+
+            echo "=== Redis container logs ==="
+            docker logs redis || echo "No redis container logs"
+
+            # Clean up unused images
+            docker image prune -f
+
+      - name: Health check
+        run: |
+          sleep 60
+          curl -f http://100.54.96.142:3001 || exit 1
+          curl -f http://100.54.96.142:3002 || exit 1
+          curl -f http://100.54.96.142:3003/health || exit 1
