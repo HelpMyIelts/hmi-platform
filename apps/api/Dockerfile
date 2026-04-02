@@ -4,8 +4,8 @@ WORKDIR /app
 
 # Copy package files first for better caching
 COPY apps/api/package*.json ./apps/api/
-COPY pnpm-lock.yaml ./
-COPY pnpm-workspace.yaml ./
+COPY ./pnpm-lock.yaml ./pnpm-lock.yaml
+COPY ./pnpm-workspace.yaml ./pnpm-workspace.yaml
 
 # Install pnpm and dependencies
 RUN npm install -g pnpm
