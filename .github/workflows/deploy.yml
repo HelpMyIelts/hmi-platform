@@ -97,8 +97,13 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY
+          script_stop: true
           script: |
             cd /home/ubuntu
+
+            # Authenticate Docker with ECR
+            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 908861959909.dkr.ecr.us-east-1.amazonaws.com
 
             # Remove old docker-compose files and create new one
             echo "Removing old docker-compose files..."
@@ -263,8 +268,8 @@ jobs:
         run: |
           sleep 30
           echo "Checking landing page..."
-          curl -f http://100.54.96.142:3001 || exit 1
+          curl -f http://${{ secrets.EC2_HOST }}:3001 || exit 1
           echo "Checking app..."
-          curl -f http://100.54.96.142:3002 || exit 1
+          curl -f http://${{ secrets.EC2_HOST }}:3002 || exit 1
           echo "Checking API health..."
-          curl -f http://100.54.96.142:3003/health || exit 1
+          curl -f http://${{ secrets.EC2_HOST }}:3003/health || exit 1
