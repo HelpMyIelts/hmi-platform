@@ -28,8 +28,15 @@ RUN --mount=type=cache,target=/root/.pnpm-store pnpm --filter api run build
 # Prune to a self-contained production deployment
 RUN --mount=type=cache,target=/root/.pnpm-store pnpm --filter api deploy --prod /app/deploy
 
-# Copy the generated Prisma client — lives in .prisma/client at the workspace root
-RUN cp -r /app/node_modules/.prisma /app/deploy/node_modules/.prisma
+# Regenerate the Prisma client inside the pruned deploy directory.
+# pnpm deploy --prod strips `prisma` (a devDependency), and in pnpm workspaces
+# the builder's generated client lives under node_modules/.pnpm, not the
+# hoisted root — so a plain `cp` can't find it. Running `npx prisma generate`
+# against the deploy folder produces a flat node_modules/.prisma/client that
+# matches what @prisma/client expects at runtime.
+WORKDIR /app/deploy
+RUN --mount=type=cache,target=/root/.npm npx --yes prisma@7.3.0 generate --schema=./prisma/schema.prisma
+WORKDIR /app
 
 FROM node:20-alpine AS runner
 
