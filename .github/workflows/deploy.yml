@@ -125,14 +125,14 @@ jobs:
             docker volume create hmi_postgres_data || true
 
             # Bring up services (docker compose V2 syntax)
-            docker compose -f docker-compose.prod.yml down --remove-orphans || true
-            docker compose -f docker-compose.prod.yml up -d
+            docker-compose -f docker-compose.prod.yml down --remove-orphans || true
+            docker-compose -f docker-compose.prod.yml up -d
 
             # Wait for API to be healthy
             echo "Waiting for API to be healthy..."
             timeout 120 bash -c 'until docker inspect --format="{{.State.Health.Status}}" api 2>/dev/null | grep -q "healthy"; do sleep 5; done'
 
-            docker compose -f docker-compose.prod.yml ps
+            docker-compose -f docker-compose.prod.yml ps
             docker image prune -f
 
       - name: Health check
