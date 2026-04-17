@@ -26,12 +26,12 @@ FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# Copy built application
+# In a pnpm monorepo, standalone output nests the app under apps/web/
 COPY --from=builder /app/apps/web/.next/standalone ./
-COPY --from=builder /app/apps/web/.next/static ./.next/static
-COPY --from=builder /app/apps/web/public ./public
-COPY --from=builder /app/apps/web/package.json ./package.json
+COPY --from=builder /app/apps/web/.next/static ./apps/web/.next/static
+COPY --from=builder /app/apps/web/public ./apps/web/public
 
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+ENV HOSTNAME="0.0.0.0"
+CMD ["node", "apps/web/server.js"]

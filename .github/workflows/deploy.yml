@@ -124,7 +124,10 @@ jobs:
             # Ensure the named volume exists before compose up
             docker volume create hmi_postgres_data || true
 
-            # Bring up services (docker compose V2 syntax)
+            # Stop any container already bound to port 80
+            docker ps -q --filter "publish=80" | xargs -r docker stop || true
+
+            # Bring up services
             docker-compose -f docker-compose.prod.yml down --remove-orphans || true
             docker-compose -f docker-compose.prod.yml up -d
 
