@@ -28,10 +28,8 @@ RUN --mount=type=cache,target=/root/.pnpm-store pnpm --filter api run build
 # Prune to a self-contained production deployment
 RUN --mount=type=cache,target=/root/.pnpm-store pnpm --filter api deploy --prod /app/deploy
 
-# Copy the generated Prisma engine into the deploy output
-# Prisma v7+ generates into @prisma/client (not .prisma)
-RUN cp -r /app/node_modules/.pnpm/@prisma+client*/node_modules/@prisma/client/. \
-    /app/deploy/node_modules/@prisma/client/ 2>/dev/null || true
+# Copy the generated Prisma client — lives in .prisma/client at the workspace root
+RUN cp -r /app/node_modules/.prisma /app/deploy/node_modules/.prisma
 
 FROM node:20-alpine AS runner
 
