@@ -35,7 +35,9 @@ RUN --mount=type=cache,target=/root/.pnpm-store pnpm --filter api deploy --prod 
 # against the deploy folder produces a flat node_modules/.prisma/client that
 # matches what @prisma/client expects at runtime.
 WORKDIR /app/deploy
-RUN --mount=type=cache,target=/root/.npm npx --yes prisma@7.3.0 generate --schema=./prisma/schema.prisma
+RUN --mount=type=cache,target=/root/.npm \
+    rm -f prisma.config.ts && \
+    npx --yes prisma@7.3.0 generate --schema=./prisma/schema.prisma
 WORKDIR /app
 
 FROM node:20-alpine AS runner
