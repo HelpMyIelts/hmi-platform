@@ -81,7 +81,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "docker-compose.prod.yml,docker/postgres/init.sql"
+          source: "docker-compose.prod.yml,docker/postgres/init.sql,docker/nginx/nginx.conf"
           target: /home/${{ secrets.EC2_USER }}
 
       - name: Deploy to EC2
@@ -107,8 +107,8 @@ jobs:
               "$ECR_LANDING" "$ECR_APP" "$ECR_API" > .env
             chmod 600 .env
 
-            # Ensure the postgres init dir is in the right place
-            mkdir -p docker/postgres
+            # Ensure docker config dirs exist
+            mkdir -p docker/postgres docker/nginx
 
             # Derive the ECR registry hostname from the ECR_API image URL
             ECR_REGISTRY=$(echo "$ECR_API" | cut -d'/' -f1)
@@ -139,8 +139,8 @@ jobs:
         run: |
           sleep 15
           echo "Checking API health..."
-          curl -f http://${{ secrets.EC2_HOST }}:3004/health || exit 1
+          curl -f -H "Host: api.helpmyielts.com" http://${{ secrets.EC2_HOST }}/health || exit 1
           echo "Checking landing page..."
-          curl -f http://${{ secrets.EC2_HOST }}:3000 || exit 1
+          curl -f -H "Host: helpmyielts.com" http://${{ secrets.EC2_HOST }} || exit 1
           echo "Checking app..."
-          curl -f http://${{ secrets.EC2_HOST }}:3003 || exit 1
+          curl -f -H "Host: app.helpmyielts.com" http://${{ secrets.EC2_HOST }} || exit 1
