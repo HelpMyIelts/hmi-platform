@@ -33,7 +33,7 @@ const teamImages: (string | null)[] = [
   "/team/saroj.jpeg",
   "/team/sachit.jpeg",
   "/team/sudesh.jpeg",
-  null,
+  "/team/prakat.jpeg",
 ];
 
 function LogoMark({ className = "" }: { className?: string }) {

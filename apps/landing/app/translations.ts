@@ -123,7 +123,7 @@ export const translations = {
           role: "Co-founder & Operations",
         },
         {
-          name: "Prakat",
+          name: "Prakat Koirala",
           role: "Co-founder & Design",
         },
       ],
@@ -297,7 +297,7 @@ export const translations = {
           role: "सह-संस्थापक र सञ्चालन",
         },
         {
-          name: "प्रकट",
+          name: "प्रकट कोइराला",
           role: "सह-संस्थापक र डिजाइन",
         },
       ],

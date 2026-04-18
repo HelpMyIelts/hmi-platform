@@ -145,8 +145,8 @@ jobs:
         run: |
           sleep 15
           echo "Checking API health..."
-          curl -f -H "Host: api.helpmyielts.com" http://${{ secrets.EC2_HOST }}/health || exit 1
+          curl -fL -H "Host: api.helpmyielts.com" http://localhost/health || exit 1
           echo "Checking landing page..."
-          curl -f -H "Host: helpmyielts.com" http://${{ secrets.EC2_HOST }} || exit 1
+          curl -fL -H "Host: helpmyielts.com" http://localhost || exit 1
           echo "Checking app..."
-          curl -f -H "Host: app.helpmyielts.com" http://localhost || exit 1
+          curl -fL -H "Host: app.helpmyielts.com" http://localhost || exit 1
