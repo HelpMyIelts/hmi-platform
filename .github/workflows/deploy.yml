@@ -81,8 +81,8 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "docker-compose.prod.yml,docker/postgres/init.sql,docker/nginx/nginx.conf"
-          target: /home/${{ secrets.EC2_USER }}
+          source: "docker-compose.prod.yml,docker/"
+          target: /home/${{ secrets.EC2_USER }}/app
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3

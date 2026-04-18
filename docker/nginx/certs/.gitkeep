@@ -1,0 +1,2 @@
+# Placeholder to maintain directory structure for SSL certificates.
+# Place fullchain.pem and privkey.pem in this directory on the server.
