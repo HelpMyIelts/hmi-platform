@@ -38,38 +38,17 @@ const teamImages: (string | null)[] = [
 
 function LogoMark({ className = "" }: { className?: string }) {
   return (
-    <svg
-      viewBox="0 0 32 32"
-      fill="none"
-      aria-hidden="true"
+    <img
+      src="/hmilogo.png"
+      alt="HelpMyIELTS Logo"
       className={className}
-    >
-      <path
-        d="M16 4 3 10l13 6 13-6-13-6Z"
-        fill="currentColor"
-        opacity="0.95"
-      />
-      <path
-        d="M8 13v6c0 2.2 3.6 4 8 4s8-1.8 8-4v-6"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        opacity="0.85"
-      />
-      <path
-        d="M27 11v6"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <circle cx="27" cy="19" r="1.5" fill="currentColor" />
-    </svg>
+    />
   );
 }
 
 export default function Home() {
   const [lang, setLang] = useState<Language>("en");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const t = translations[lang];
   const bands = lang === "np" ? bandRangesNp : bandRanges;
 
@@ -77,68 +56,99 @@ export default function Home() {
     <div className="flex flex-col min-h-full">
       {/* ─── Navbar ─── */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100/80">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2.5 group">
-            <LogoMark className="w-7 h-7 text-blue-600 transition-transform group-hover:scale-105" />
-            <span className="text-lg font-bold tracking-tight text-slate-900">
+        <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+          <a href="/" className="flex items-center gap-2.5 group shrink-0">
+            <LogoMark className="w-8 h-8 text-blue-600 transition-transform group-hover:scale-105" />
+            <span className="text-xl font-bold tracking-tight text-slate-900 hidden sm:block">
               Help<span className="text-blue-600">My</span>IELTS
             </span>
           </a>
-          <nav className="hidden md:flex items-center gap-8 text-sm text-slate-500">
-            <a href="#features" className="hover:text-slate-900 transition-colors">
-              {t.nav.features}
-            </a>
-            <a href="#how-it-works" className="hover:text-slate-900 transition-colors">
-              {t.nav.howItWorks}
-            </a>
-            <a href="#team" className="hover:text-slate-900 transition-colors">
-              {t.nav.team}
-            </a>
-            <a href="#testimonials" className="hover:text-slate-900 transition-colors">
-              {t.nav.results}
-            </a>
+
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-500">
+            <a href="#features" className="hover:text-slate-900 transition-colors">{t.nav.features}</a>
+            <a href="#how-it-works" className="hover:text-slate-900 transition-colors">{t.nav.howItWorks}</a>
+            <a href="#team" className="hover:text-slate-900 transition-colors">{t.nav.team}</a>
+            <a href="#testimonials" className="hover:text-slate-900 transition-colors">{t.nav.results}</a>
           </nav>
+
           <div className="flex items-center gap-3">
-            {/* Language toggle */}
-            <div className="flex items-center rounded-full border border-slate-200 bg-white p-0.5 text-xs font-semibold">
+            {/* Desktop Language toggle */}
+            <div className="hidden md:flex items-center rounded-full border border-slate-200 bg-white p-0.5 text-[10px] font-bold">
               <button
                 onClick={() => setLang("en")}
-                className={`px-3 py-1 rounded-full transition-colors ${
-                  lang === "en"
-                    ? "bg-slate-900 text-white"
-                    : "text-slate-500 hover:text-slate-900"
-                }`}
-                aria-pressed={lang === "en"}
+                className={`px-2.5 py-1 rounded-full transition-colors ${lang === "en" ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-900"}`}
               >
                 EN
               </button>
               <button
                 onClick={() => setLang("np")}
-                className={`px-3 py-1 rounded-full transition-colors ${
-                  lang === "np"
-                    ? "bg-slate-900 text-white"
-                    : "text-slate-500 hover:text-slate-900"
-                }`}
-                aria-pressed={lang === "np"}
+                className={`px-2.5 py-1 rounded-full transition-colors ${lang === "np" ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-900"}`}
               >
                 नेपाली
               </button>
             </div>
+
             <a
               href="https://app.helpmyielts.com"
-              className="hidden sm:inline-flex text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+              className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 transition-all shadow-sm active:scale-95"
             >
-              {t.nav.signIn}
+              <span className="hidden xs:inline">{t.nav.getStarted}</span>
+              <span className="xs:hidden">Get started</span>
             </a>
-            <a
-              href="https://app.helpmyielts.com"
-              className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2 text-sm font-medium text-white hover:bg-slate-700 transition-all shadow-sm hover:shadow-md"
+
+            {/* Mobile Menu Toggle */}
+            <button
+              onClick={() => setIsMenuOpen(true)}
+              className="md:hidden p-2 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
+              aria-label="Open menu"
             >
-              {t.nav.getStarted}
-            </a>
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
           </div>
         </div>
       </header>
+
+      {/* ─── Mobile Menu Overlay ─── */}
+      {isMenuOpen && (
+        <div className="fixed inset-0 z-[100] md:hidden">
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)} />
+          <nav className="absolute top-0 right-0 bottom-0 w-[280px] bg-white shadow-2xl flex flex-col p-8 slide-in-right">
+            <div className="flex items-center justify-between mb-10">
+              <LogoMark className="w-8 h-8 text-blue-600" />
+              <button onClick={() => setIsMenuOpen(false)} className="p-2 text-slate-400 hover:text-slate-900 transition-colors">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-6 text-lg font-semibold text-slate-900 mb-auto">
+              <a href="#features" onClick={() => setIsMenuOpen(false)} className="hover:text-blue-600 transition-colors">{t.nav.features}</a>
+              <a href="#how-it-works" onClick={() => setIsMenuOpen(false)} className="hover:text-blue-600 transition-colors">{t.nav.howItWorks}</a>
+              <a href="#team" onClick={() => setIsMenuOpen(false)} className="hover:text-blue-600 transition-colors">{t.nav.team}</a>
+              <a href="#testimonials" onClick={() => setIsMenuOpen(false)} className="hover:text-blue-600 transition-colors">{t.nav.results}</a>
+            </div>
+
+            <div className="pt-8 border-t border-slate-100 flex flex-col gap-6">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-slate-500">Language / भाषा</span>
+                <div className="flex items-center rounded-full border border-slate-200 bg-white p-0.5 text-xs font-bold">
+                  <button onClick={() => setLang("en")} className={`px-4 py-1.5 rounded-full transition-colors ${lang === "en" ? "bg-slate-900 text-white" : "text-slate-500"}`}>EN</button>
+                  <button onClick={() => setLang("np")} className={`px-4 py-1.5 rounded-full transition-colors ${lang === "np" ? "bg-slate-900 text-white" : "text-slate-500"}`}>नेपाली</button>
+                </div>
+              </div>
+              <a
+                href="https://app.helpmyielts.com"
+                className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold flex items-center justify-center gap-2"
+              >
+                {t.nav.signIn}
+              </a>
+            </div>
+          </nav>
+        </div>
+      )}
 
       <main className="flex-1">
         {/* ─── Hero ─── */}
