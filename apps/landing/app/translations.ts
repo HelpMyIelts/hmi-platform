@@ -11,7 +11,7 @@ export const translations = {
       getStarted: "Get started",
     },
     hero: {
-      badge: "AI-Powered IELTS & PTE Preparation",
+      badge: "AI-Powered IELTS Preparation",
       title1: "Achieve your target",
       titleHighlight: "band score",
       title2: "with confidence",
@@ -163,7 +163,7 @@ export const translations = {
     },
     footer: {
       tagline:
-        "AI-powered IELTS & PTE preparation platform helping students achieve their target band scores.",
+        "AI-powered IELTS preparation platform helping students achieve their target band scores.",
       product: "Product",
       resources: "Resources",
       contact: "Contact",
@@ -185,7 +185,7 @@ export const translations = {
       getStarted: "सुरु गर्नुहोस्",
     },
     hero: {
-      badge: "AI संचालित IELTS र PTE तयारी",
+      badge: "AI संचालित IELTS तयारी",
       title1: "आफ्नो लक्षित",
       titleHighlight: "ब्यान्ड स्कोर",
       title2: "आत्मविश्वासका साथ हासिल गर्नुहोस्",
@@ -337,7 +337,7 @@ export const translations = {
     },
     footer: {
       tagline:
-        "AI-संचालित IELTS र PTE तयारी प्लेटफर्म, विद्यार्थीहरूलाई लक्षित ब्यान्ड स्कोर हासिल गर्न मद्दत गर्दै।",
+        "AI-संचालित IELTS तयारी प्लेटफर्म, विद्यार्थीहरूलाई लक्षित ब्यान्ड स्कोर हासिल गर्न मद्दत गर्दै।",
       product: "उत्पादन",
       resources: "स्रोतहरू",
       contact: "सम्पर्क",

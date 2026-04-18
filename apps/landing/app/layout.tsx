@@ -11,13 +11,13 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "HelpMyIELTS — Achieve Your Target Band Score",
   description:
-    "AI-powered IELTS & PTE preparation platform. Practice Writing, Speaking, Reading and Listening with personalised feedback and expert guidance.",
+    "AI-powered IELTS preparation platform. Practice Writing, Speaking, Reading and Listening with personalised feedback and expert guidance.",
   keywords:
-    "IELTS preparation, PTE practice, band score, AI feedback, IELTS writing, IELTS speaking, English test prep",
+    "IELTS preparation, band score, AI feedback, IELTS writing, IELTS speaking, English test prep",
   openGraph: {
     title: "HelpMyIELTS — Achieve Your Target Band Score",
     description:
-      "AI-powered IELTS & PTE preparation platform with personalised feedback.",
+      "AI-powered IELTS preparation platform with personalised feedback.",
     type: "website",
     url: "https://helpmyielts.com",
   },
