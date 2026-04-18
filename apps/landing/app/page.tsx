@@ -57,9 +57,9 @@ export default function Home() {
       {/* ─── Navbar ─── */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100/80">
         <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2.5 group shrink-0">
-            <LogoMark className="w-8 h-8 text-blue-600 transition-transform group-hover:scale-105" />
-            <span className="text-xl font-bold tracking-tight text-slate-900 hidden sm:block">
+          <a href="/" className="flex items-center gap-1 group shrink-0">
+            <LogoMark className="w-14 h-14 transition-transform group-hover:scale-105" />
+            <span className="text-2xl font-extrabold tracking-tight text-slate-900 hidden sm:block">
               Help<span className="text-blue-600">My</span>IELTS
             </span>
           </a>
@@ -76,13 +76,13 @@ export default function Home() {
             <div className="hidden md:flex items-center rounded-full border border-slate-200 bg-white p-0.5 text-[10px] font-bold">
               <button
                 onClick={() => setLang("en")}
-                className={`px-2.5 py-1 rounded-full transition-colors ${lang === "en" ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-900"}`}
+                className={`px-2.5 py-1 rounded-full transition-colors ${lang === "en" ? "bg-blue-600 text-white" : "text-slate-500 hover:text-slate-900"}`}
               >
                 EN
               </button>
               <button
                 onClick={() => setLang("np")}
-                className={`px-2.5 py-1 rounded-full transition-colors ${lang === "np" ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-900"}`}
+                className={`px-2.5 py-1 rounded-full transition-colors ${lang === "np" ? "bg-blue-600 text-white" : "text-slate-500 hover:text-slate-900"}`}
               >
                 नेपाली
               </button>
@@ -90,7 +90,7 @@ export default function Home() {
 
             <a
               href="https://app.helpmyielts.com"
-              className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 transition-all shadow-sm active:scale-95"
+              className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-blue-700 transition-all shadow-sm shadow-blue-200 active:scale-95"
             >
               <span className="hidden xs:inline">{t.nav.getStarted}</span>
               <span className="xs:hidden">Get started</span>
@@ -116,7 +116,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)} />
           <nav className="absolute top-0 right-0 bottom-0 w-[280px] bg-white shadow-2xl flex flex-col p-8 slide-in-right">
             <div className="flex items-center justify-between mb-10">
-              <LogoMark className="w-8 h-8 text-blue-600" />
+              <LogoMark className="w-14 h-14" />
               <button onClick={() => setIsMenuOpen(false)} className="p-2 text-slate-400 hover:text-slate-900 transition-colors">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -135,8 +135,8 @@ export default function Home() {
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-slate-500">Language / भाषा</span>
                 <div className="flex items-center rounded-full border border-slate-200 bg-white p-0.5 text-xs font-bold">
-                  <button onClick={() => setLang("en")} className={`px-4 py-1.5 rounded-full transition-colors ${lang === "en" ? "bg-slate-900 text-white" : "text-slate-500"}`}>EN</button>
-                  <button onClick={() => setLang("np")} className={`px-4 py-1.5 rounded-full transition-colors ${lang === "np" ? "bg-slate-900 text-white" : "text-slate-500"}`}>नेपाली</button>
+                  <button onClick={() => setLang("en")} className={`px-4 py-1.5 rounded-full transition-colors ${lang === "en" ? "bg-blue-600 text-white" : "text-slate-500"}`}>EN</button>
+                  <button onClick={() => setLang("np")} className={`px-4 py-1.5 rounded-full transition-colors ${lang === "np" ? "bg-blue-600 text-white" : "text-slate-500"}`}>नेपाली</button>
                 </div>
               </div>
               <a
@@ -152,12 +152,14 @@ export default function Home() {
 
       <main className="flex-1">
         {/* ─── Hero ─── */}
-        <section className="hero-gradient relative overflow-hidden">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-10 right-10 w-96 h-96 bg-indigo-200/20 rounded-full blur-3xl" />
+        <section className="hero-gradient relative overflow-hidden min-h-[90vh] flex items-center">
+          {/* Animated Blobs */}
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-400/20 rounded-full blur-[120px] animate-blob" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-400/20 rounded-full blur-[120px] animate-blob animation-delay-2000" />
+          <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-purple-400/10 rounded-full blur-[100px] animate-blob animation-delay-4000" />
 
-          <div className="max-w-6xl mx-auto px-6 pt-20 sm:pt-28 pb-24 sm:pb-32 text-center relative z-10">
-            <div className="inline-flex items-center gap-2 rounded-full border border-blue-200/60 bg-blue-50/80 px-4 py-1.5 text-xs font-semibold text-blue-700 mb-8 backdrop-blur-sm">
+          <div className="max-w-6xl mx-auto px-6 py-20 text-center relative z-10">
+            <div className="reveal inline-flex items-center gap-2 rounded-full border border-blue-200/60 bg-blue-50/80 px-4 py-1.5 text-xs font-semibold text-blue-700 mb-8 backdrop-blur-sm">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75 animate-ping" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500" />
@@ -165,7 +167,7 @@ export default function Home() {
               {t.hero.badge}
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.15] max-w-4xl mx-auto">
+            <h1 className="reveal text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 leading-[1.1] max-w-4xl mx-auto [animation-delay:200ms]">
               {t.hero.title1}{" "}
               <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent">
                 {t.hero.titleHighlight}
@@ -173,20 +175,20 @@ export default function Home() {
               {t.hero.title2}
             </h1>
 
-            <p className="mt-6 text-lg sm:text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed">
+            <p className="reveal mt-8 text-lg sm:text-2xl text-slate-500 max-w-2xl mx-auto leading-relaxed [animation-delay:400ms]">
               {t.hero.subtitle}
             </p>
 
-            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="reveal mt-12 flex flex-col sm:flex-row gap-5 justify-center [animation-delay:600ms]">
               <a
                 href="https://app.helpmyielts.com"
-                className="group inline-flex items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-4 text-sm font-semibold text-white hover:from-blue-500 hover:to-indigo-500 transition-all shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30"
+                className="group inline-flex items-center justify-center rounded-full bg-blue-600 px-10 py-5 text-lg font-bold text-white hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/20 hover:shadow-blue-600/30 hover:-translate-y-1 active:scale-95"
               >
                 {t.hero.ctaPrimary}
               </a>
               <a
                 href="#how-it-works"
-                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white/80 backdrop-blur-sm px-8 py-4 text-sm font-semibold text-slate-700 hover:bg-white hover:border-slate-300 transition-all shadow-sm"
+                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white/60 backdrop-blur-md px-10 py-5 text-lg font-bold text-slate-700 hover:bg-white hover:border-slate-300 transition-all shadow-sm hover:-translate-y-1 active:scale-95"
               >
                 {t.hero.ctaSecondary}
               </a>
@@ -237,7 +239,7 @@ export default function Home() {
                 return (
                   <div
                     key={band}
-                    className="group relative rounded-2xl bg-white border border-slate-100 p-6 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1 overflow-hidden"
+                    className={`reveal group relative rounded-2xl bg-white border border-slate-100 p-6 shadow-sm hover-lift hover-glow overflow-hidden [animation-delay:${i * 100}ms]`}
                   >
                     <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${bandColors[i]}`} />
                     <div className={`text-2xl sm:text-3xl font-bold bg-gradient-to-r ${bandColors[i]} bg-clip-text text-transparent`}>
@@ -273,12 +275,12 @@ export default function Home() {
               {t.features.items.map(({ title, desc }, i) => (
                 <div
                   key={title}
-                  className="group rounded-2xl border border-slate-100 bg-white p-7 hover:border-slate-200 hover:shadow-xl hover:shadow-slate-100/50 transition-all hover:-translate-y-1"
+                  className={`reveal group rounded-2xl border border-slate-100 bg-white p-7 hover-lift shadow-sm [animation-delay:${(i % 3) * 150}ms]`}
                 >
-                  <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center text-2xl mb-5 group-hover:scale-110 transition-transform">
+                  <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform group-hover:bg-blue-100/50">
                     {featureIcons[i]}
                   </div>
-                  <h3 className="text-base font-semibold text-slate-900 mb-2">{title}</h3>
+                  <h3 className="text-lg font-bold text-slate-900 mb-3">{title}</h3>
                   <p className="text-sm text-slate-500 leading-relaxed">{desc}</p>
                 </div>
               ))}
@@ -374,26 +376,28 @@ export default function Home() {
               <p className="text-slate-500 max-w-lg mx-auto">{t.testimonials.subtitle}</p>
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {t.testimonials.items.map(({ name, from, score, text }) => (
+            <div className="bento-grid">
+              {t.testimonials.items.map(({ name, from, score, text }, i) => (
                 <div
                   key={name}
-                  className="rounded-2xl border border-slate-100 bg-white p-7 shadow-sm hover:shadow-lg transition-all"
+                  className={`reveal glass-card-premium rounded-3xl p-8 hover-lift shadow-sm flex flex-col [animation-delay:${(i % 3) * 200}ms] ${
+                    i === 0 ? "bento-item-wide" : i === 1 ? "bento-item-large" : ""
+                  }`}
                 >
-                  <div className="flex items-center gap-1 mb-4">
+                  <div className="flex items-center gap-1 mb-6">
                     {[...Array(5)].map((_, i) => (
-                      <svg key={i} className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                      <svg key={i} className="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
                     ))}
                   </div>
-                  <p className="text-sm text-slate-600 leading-relaxed mb-5">&ldquo;{text}&rdquo;</p>
+                  <p className="text-lg text-slate-600 leading-relaxed mb-8 italic flex-1">&ldquo;{text}&rdquo;</p>
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-sm font-semibold text-slate-900">{name}</div>
-                      <div className="text-xs text-slate-400">{from}</div>
+                      <div className="text-base font-bold text-slate-900">{name}</div>
+                      <div className="text-sm text-slate-400">{from}</div>
                     </div>
-                    <div className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
+                    <div className="inline-flex items-center rounded-full bg-blue-50 px-4 py-1.5 text-sm font-bold text-blue-700">
                       {score}
                     </div>
                   </div>
@@ -432,9 +436,9 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-6 py-12">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             <div className="sm:col-span-2 lg:col-span-1">
-              <div className="flex items-center gap-2.5 mb-4">
-                <LogoMark className="w-7 h-7 text-blue-400" />
-                <span className="text-lg font-bold text-white">
+              <div className="flex items-center gap-1.5 mb-4">
+                <LogoMark className="w-14 h-14" />
+                <span className="text-xl font-bold text-white">
                   Help<span className="text-blue-400">My</span>IELTS
                 </span>
               </div>
