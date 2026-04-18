@@ -127,6 +127,9 @@ jobs:
             # Stop any container already bound to port 80
             docker ps -q --filter "publish=80" | xargs -r docker stop || true
 
+            # Explicitly remove old containers to avoid naming conflicts from previous deployments
+            docker rm -f landing app api postgres redis nginx || true
+
             # Bring up services
             docker-compose -f docker-compose.prod.yml down --remove-orphans || true
             docker-compose -f docker-compose.prod.yml up -d
