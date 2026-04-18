@@ -99,7 +99,7 @@ jobs:
           script_stop: true
           script: |
             set -e
-            cd /home/${{ secrets.EC2_USER }}
+            cd /home/${{ secrets.EC2_USER }}/app
 
             # Write secrets to .env from env vars (docker compose reads this automatically)
             printf 'JWT_SECRET=%s\nAWS_ACCESS_KEY_ID=%s\nAWS_SECRET_ACCESS_KEY=%s\nECR_LANDING=%s\nECR_APP=%s\nECR_API=%s\n' \
@@ -146,4 +146,4 @@ jobs:
           echo "Checking landing page..."
           curl -f -H "Host: helpmyielts.com" http://${{ secrets.EC2_HOST }} || exit 1
           echo "Checking app..."
-          curl -f -H "Host: app.helpmyielts.com" http://${{ secrets.EC2_HOST }} || exit 1
+          curl -f -H "Host: app.helpmyielts.com" http://localhost || exit 1
