@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { validate } from './config/env.validation';
 import { PrismaService } from './prisma.service';
-import { UsersService } from './users/users.service';
-import { AuthService } from './auth/auth.service';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { LoggerService } from './common/logger/logger.service';
 
 @Module({
   imports: [
@@ -17,19 +17,12 @@ import { AuthService } from './auth/auth.service';
       validate,
     }),
 
-    // ── JWT ─────────────────────────────────────────────
-    JwtModule.registerAsync({
-      global: true,
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        secret: config.get<string>('JWT_SECRET')!,
-        signOptions: {
-          expiresIn: config.get<string>('JWT_EXPIRY', '15m') as any,
-        },
-      }),
-    }),
+    // ── Modules ──────────────────────────────────────────
+    AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
-  providers: [AppService, PrismaService, UsersService, AuthService],
+  providers: [AppService, PrismaService, LoggerService],
+  exports: [LoggerService],
 })
 export class AppModule {}

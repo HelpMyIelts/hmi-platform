@@ -1,4 +1,4 @@
-import { IsEmail, IsString, IsOptional, IsEnum } from 'class-validator';
+import { IsEmail, IsString, MinLength, MaxLength, IsEnum, IsOptional } from 'class-validator';
 import { RegisterRequest, UserRole } from '@repo/types';
 
 export class RegisterDto implements RegisterRequest {
@@ -6,6 +6,8 @@ export class RegisterDto implements RegisterRequest {
   email: string;
 
   @IsString()
+  @MinLength(8, { message: 'Password must be at least 8 characters' })
+  @MaxLength(50, { message: 'Password must be at most 50 characters' })
   password: string;
 
   @IsString()
@@ -15,5 +17,6 @@ export class RegisterDto implements RegisterRequest {
   lastName: string;
 
   @IsEnum(UserRole)
-  role: UserRole;
+  @IsOptional()
+  role?: UserRole;
 }
