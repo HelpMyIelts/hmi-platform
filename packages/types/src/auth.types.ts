@@ -14,6 +14,10 @@ export interface RegisterRequest {
   role?: UserRole;
 }
 
+export interface GoogleAuthRequest {
+  idToken: string;
+}
+
 export interface AuthResponse {
   access_token: string;
   refresh_token: string;

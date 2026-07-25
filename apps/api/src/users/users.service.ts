@@ -26,6 +26,16 @@ export class UsersService {
     });
   }
 
+  async findByGoogleId(googleId: string): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: { googleId },
+    });
+  }
+
+  async linkGoogleAccount(id: string, googleId: string): Promise<User> {
+    return this.update(id, { googleId });
+  }
+
   async findAll(): Promise<User[]> {
     const users = await this.prisma.user.findMany({
       select: {

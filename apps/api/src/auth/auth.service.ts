@@ -1,16 +1,23 @@
-import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { OAuth2Client } from 'google-auth-library';
 import { UsersService } from '../users/users.service';
 import { AuthUtilsService } from './auth.utils.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { AuthResponse, UserPayload } from '@repo/types';
-import { User } from '@prisma/client';
+import { User, UserRole } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
+  private readonly googleClient = new OAuth2Client();
 
   constructor(
     private usersService: UsersService,
@@ -21,7 +28,7 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<User | null> {
     const user = await this.usersService.findByEmail(email);
-    if (!user) return null;
+    if (!user || !user.passwordHash) return null;
 
     const isPasswordValid = await this.authUtilsService.comparePassword(
       password,
@@ -47,7 +54,13 @@ export class AuthService {
   }
 
   async register(registerDto: RegisterDto): Promise<AuthResponse> {
-    const { email, password, firstName, lastName, role = 'STUDENT' } = registerDto;
+    const {
+      email,
+      password,
+      firstName,
+      lastName,
+      role = 'STUDENT',
+    } = registerDto;
 
     const existingUser = await this.usersService.findByEmail(email);
     this.authUtilsService.checkUserExists(existingUser);
@@ -67,7 +80,79 @@ export class AuthService {
     return this.generateTokens(user);
   }
 
-  async refreshToken(refreshToken: string): Promise<Omit<AuthResponse, 'user'>> {
+  async googleAuth(idToken: string): Promise<AuthResponse> {
+    const clientIds = [
+      this.configService.get<string>('GOOGLE_WEB_CLIENT_ID'),
+      this.configService.get<string>('GOOGLE_IOS_CLIENT_ID'),
+      this.configService.get<string>('GOOGLE_ANDROID_CLIENT_ID'),
+    ].filter((id): id is string => Boolean(id));
+
+    if (clientIds.length === 0) {
+      throw new InternalServerErrorException(
+        'Google sign-in is not configured',
+      );
+    }
+
+    let payload: {
+      sub: string;
+      email?: string;
+      email_verified?: boolean;
+      given_name?: string;
+      family_name?: string;
+    };
+
+    try {
+      const ticket = await this.googleClient.verifyIdToken({
+        idToken,
+        audience: clientIds,
+      });
+      const ticketPayload = ticket.getPayload();
+      if (!ticketPayload) {
+        throw new Error('Empty Google token payload');
+      }
+      payload = ticketPayload;
+    } catch {
+      this.logger.warn('Invalid Google id_token presented for sign-in');
+      throw new UnauthorizedException('Invalid Google token');
+    }
+
+    if (!payload.email || !payload.email_verified) {
+      throw new UnauthorizedException('Google account email not verified');
+    }
+
+    let user = await this.usersService.findByGoogleId(payload.sub);
+
+    if (!user) {
+      const existingUser = await this.usersService.findByEmail(payload.email);
+
+      if (existingUser) {
+        user = await this.usersService.linkGoogleAccount(
+          existingUser.id,
+          payload.sub,
+        );
+      } else {
+        user = await this.usersService.create({
+          email: payload.email,
+          googleId: payload.sub,
+          firstName: payload.given_name || 'Google',
+          lastName: payload.family_name || 'User',
+          role: UserRole.STUDENT,
+          emailVerified: true,
+        });
+        this.logger.log(`User registered via Google: ${user.email}`);
+      }
+    }
+
+    if (!user.isActive) {
+      throw new UnauthorizedException('Account is disabled');
+    }
+
+    return this.generateTokens(user);
+  }
+
+  async refreshToken(
+    refreshToken: string,
+  ): Promise<Omit<AuthResponse, 'user'>> {
     try {
       const payload = this.jwtService.verify(refreshToken, {
         secret: this.configService.get<string>('JWT_SECRET'),
@@ -104,7 +189,8 @@ export class AuthService {
 
   private generateJwtTokens(user: User) {
     const payload = this.authUtilsService.extractUserPayload(user);
-    const refreshTokenExpiry = this.configService.get<string>('JWT_REFRESH_EXPIRY') || '7d';
+    const refreshTokenExpiry =
+      this.configService.get<string>('JWT_REFRESH_EXPIRY') || '7d';
 
     return {
       access_token: this.jwtService.sign(payload as any),

@@ -1,8 +1,14 @@
 import { Controller, Post, Body, UseGuards, Get, Req } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { GoogleAuthDto } from './dto/google-auth.dto';
 import { JwtGuard, RolesGuard } from './guards';
 import { CurrentUser, Roles } from './decorators';
 import { UserRole, UserPayload, AuthResponse } from '@repo/types';
@@ -27,6 +33,23 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
   async login(@Body() loginDto: LoginDto): Promise<AuthResponse> {
     return this.authService.login(loginDto);
+  }
+
+  @Post('google')
+  @ApiOperation({
+    summary: 'Sign in or sign up with a Google id_token',
+    description:
+      'Verifies a Google id_token obtained client-side (Google Sign-In SDK on web or mobile) and returns the same token pair as /auth/login.',
+  })
+  @ApiResponse({ status: 200, description: 'Google sign-in successful' })
+  @ApiResponse({
+    status: 401,
+    description: 'Invalid or unverified Google token',
+  })
+  async googleAuth(
+    @Body() googleAuthDto: GoogleAuthDto,
+  ): Promise<AuthResponse> {
+    return this.authService.googleAuth(googleAuthDto.idToken);
   }
 
   @Post('refresh')
@@ -60,7 +83,10 @@ export class AuthController {
   @ApiOperation({ summary: 'Admin-only endpoint example' })
   @ApiResponse({ status: 200, description: 'Admin access granted' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 403, description: 'Forbidden - insufficient permissions' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - insufficient permissions',
+  })
   async adminOnlyEndpoint(@CurrentUser() user: UserPayload) {
     return {
       message: 'This is admin only',

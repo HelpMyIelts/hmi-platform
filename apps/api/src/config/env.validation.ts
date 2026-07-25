@@ -25,6 +25,18 @@ class EnvironmentVariables {
   @IsString()
   @IsOptional()
   BCRYPT_SALT_ROUNDS: string;
+
+  @IsString()
+  @IsOptional()
+  GOOGLE_WEB_CLIENT_ID: string;
+
+  @IsString()
+  @IsOptional()
+  GOOGLE_IOS_CLIENT_ID: string;
+
+  @IsString()
+  @IsOptional()
+  GOOGLE_ANDROID_CLIENT_ID: string;
 }
 
 export function validate(config: Record<string, unknown>) {
