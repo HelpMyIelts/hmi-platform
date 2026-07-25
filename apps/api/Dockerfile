@@ -6,7 +6,7 @@ WORKDIR /app
 ENV CI=true
 
 # Copy workspace manifests first for layer caching
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY apps/api/package.json ./apps/api/
 COPY packages/eslint-config/package.json ./packages/eslint-config/
 COPY packages/schemas/package.json ./packages/schemas/
@@ -22,8 +22,9 @@ RUN --mount=type=cache,target=/root/.pnpm-store pnpm install --frozen-lockfile
 COPY apps/api ./apps/api
 COPY packages ./packages
 
-# Build
-RUN --mount=type=cache,target=/root/.pnpm-store pnpm --filter api run build
+# Build (via turbo so workspace deps like @repo/types get built first,
+# per their `dependsOn: ["^build"]` in turbo.json)
+RUN --mount=type=cache,target=/root/.pnpm-store pnpm exec turbo run build --filter=api
 
 # Prune to a self-contained production deployment
 RUN --mount=type=cache,target=/root/.pnpm-store pnpm --filter api deploy --prod /app/deploy

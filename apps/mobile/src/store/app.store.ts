@@ -1,3 +1,4 @@
+import { Appearance } from 'react-native';
 import { asyncStorage } from './async.store';
 import { PLAN_TASKS_SEED } from '@/data/plan-seed';
 import { AppState, AppStore } from './types';
@@ -53,7 +54,12 @@ export const useAppStore = zustandStore<AppStore>(
         user: data.user,
       }),
     clearAuth: () => set({ token: null, refreshToken: null, user: null }),
-    resetApp: () => set({ ...initialState, _hasHydrated: true }),
+    resetApp: () =>
+      set({
+        ...initialState,
+        darkMode: Appearance.getColorScheme() === 'dark',
+        _hasHydrated: true,
+      }),
   }),
   {
     devtoolsEnabled: true,

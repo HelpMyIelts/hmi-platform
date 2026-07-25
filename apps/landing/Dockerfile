@@ -3,7 +3,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Copy package files first for better caching
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY apps/landing/package.json ./apps/landing/
 COPY packages/eslint-config/package.json ./packages/eslint-config/
 COPY packages/schemas/package.json ./packages/schemas/
@@ -19,8 +19,9 @@ RUN --mount=type=cache,target=/root/.pnpm-store pnpm install --frozen-lockfile
 COPY apps/landing ./apps/landing
 COPY packages ./packages
 
-# Build the application
-RUN --mount=type=cache,target=/root/.pnpm-store pnpm --filter landing run build
+# Build the application (via turbo so workspace deps like @repo/types
+# get built first, per their `dependsOn: ["^build"]` in turbo.json)
+RUN --mount=type=cache,target=/root/.pnpm-store pnpm exec turbo run build --filter=landing
 
 FROM node:20-alpine AS runner
 
