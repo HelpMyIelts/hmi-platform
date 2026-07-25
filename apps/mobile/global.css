@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --radius: 10px;
+
+  --background: 240 4% 95%;
+  --foreground: 200 5% 12%;
+
+  --card: 240 4% 95%;
+  --card-foreground: 200 5% 12%;
+
+  --popover: 240 2% 92%;
+  --popover-foreground: 200 5% 12%;
+
+  --primary: 210 30% 50%;
+  --primary-foreground: 240 4% 95%;
+
+  --secondary: 240 7% 91%;
+  --secondary-foreground: 200 5% 12%;
+
+  --muted: 240 18% 97%;
+  --muted-foreground: 240 1% 48%;
+
+  --accent: 212 100% 97%;
+  --accent-foreground: 209 36% 27%;
+
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 240 4% 95%;
+
+  --border: 240 4% 84%;
+  --input: 240 4% 84%;
+  --ring: 210 30% 50%;
+
+  --brand-100: 212 100% 97%;
+  --brand-200: 209 100% 92%;
+  --brand-300: 210 95% 85%;
+  --brand-400: 210 59% 74%;
+  --brand-500: 209 40% 61%;
+  --brand-600: 210 29% 49%;
+  --brand-700: 210 33% 38%;
+  --brand-800: 209 36% 27%;
+  --brand-900: 210 36% 18%;
+}
+
+.dark {
+  --background: 200 6% 10%;
+  --foreground: 240 4% 95%;
+
+  --card: 204 7% 15%;
+  --card-foreground: 240 4% 95%;
+
+  --popover: 204 7% 15%;
+  --popover-foreground: 240 4% 95%;
+
+  --primary: 210 30% 50%;
+  --primary-foreground: 200 6% 10%;
+
+  --secondary: 240 3% 21%;
+  --secondary-foreground: 240 4% 95%;
+
+  --muted: 240 2% 17%;
+  --muted-foreground: 240 1% 60%;
+
+  --accent: 210 36% 18%;
+  --accent-foreground: 209 100% 92%;
+
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 240 4% 95%;
+
+  --border: 240 1% 26%;
+  --input: 240 1% 26%;
+  --ring: 210 30% 50%;
+
+  --brand-100: 210 36% 18%;
+  --brand-200: 209 36% 27%;
+  --brand-300: 210 33% 38%;
+  --brand-400: 210 29% 49%;
+  --brand-500: 209 40% 61%;
+  --brand-600: 210 59% 74%;
+  --brand-700: 210 95% 85%;
+  --brand-800: 209 100% 92%;
+  --brand-900: 212 100% 97%;
+}
