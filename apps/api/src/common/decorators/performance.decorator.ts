@@ -11,7 +11,9 @@ export const Performance = () => {
     descriptor: PropertyDescriptor,
   ) {
     const originalMethod = descriptor.value;
-    const logger = new Logger(`Performance[${target.constructor.name}.${propertyKey}]`);
+    const logger = new Logger(
+      `Performance[${target.constructor.name}.${propertyKey}]`,
+    );
 
     descriptor.value = async function (...args: any[]) {
       const startTime = performance.now();
@@ -22,14 +24,10 @@ export const Performance = () => {
 
         if (duration > 1000) {
           // Warn if slower than 1 second
-          logger.warn(
-            `${propertyKey} took ${duration.toFixed(2)}ms (slow)`,
-          );
+          logger.warn(`${propertyKey} took ${duration.toFixed(2)}ms (slow)`);
         } else if (duration > 100) {
           // Debug if slower than 100ms
-          logger.debug(
-            `${propertyKey} took ${duration.toFixed(2)}ms`,
-          );
+          logger.debug(`${propertyKey} took ${duration.toFixed(2)}ms`);
         }
 
         return result;

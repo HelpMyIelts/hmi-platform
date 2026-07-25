@@ -36,7 +36,9 @@ export class CorsConfigService {
     if (nodeEnv === 'production') {
       // Production: only allow specified frontend URL
       if (!frontendUrl) {
-        console.warn('FRONTEND_URL not set in production - CORS may be restrictive');
+        console.warn(
+          'FRONTEND_URL not set in production - CORS may be restrictive',
+        );
         return [];
       }
       return [frontendUrl];

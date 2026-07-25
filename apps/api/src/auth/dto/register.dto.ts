@@ -1,4 +1,11 @@
-import { IsEmail, IsString, MinLength, MaxLength, IsEnum, IsOptional } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  MinLength,
+  MaxLength,
+  IsEnum,
+  IsOptional,
+} from 'class-validator';
 import { RegisterRequest, UserRole } from '@repo/types';
 
 export class RegisterDto implements RegisterRequest {
