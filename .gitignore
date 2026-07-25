@@ -40,3 +40,4 @@ yarn-error.log*
 # AI AGENTS
 .agent
 CLAUDE.md
+.claude/
