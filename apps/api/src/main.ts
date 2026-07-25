@@ -7,7 +7,11 @@ import * as bodyParser from 'body-parser';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { CorsConfigService } from './config/cors.config';
-import { GlobalExceptionFilter, LoggerService, LoggingMiddleware, ResponseInterceptor } from './common';
+import {
+  GlobalExceptionFilter,
+  LoggerService,
+  ResponseInterceptor,
+} from './common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -37,9 +41,6 @@ async function bootstrap() {
   // ── Body Parser ──────────────────────────────────────────
   app.use(bodyParser.json({ limit: '50mb' }));
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
-
-  // ── Logging Middleware (Phase 2) ────────────────────────
-  app.use(new LoggingMiddleware(loggerService));
 
   // ── Global Pipes ────────────────────────────────────────
   app.useGlobalPipes(
